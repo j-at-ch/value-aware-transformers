@@ -1,6 +1,6 @@
 # value-aware-transformers
 
-This repo contains the code for the paper [Value-aware Transformers for 1.5D Data](value_aware_transformers_for_1.5d_data.pdf).
+This repo contains the code for the paper [Value-aware Transformers for 1.5D Data](paper.pdf).
 
 ## Requirements
 
