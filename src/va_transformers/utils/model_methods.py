@@ -15,8 +15,6 @@ class TQLoss:
 class PretrainingMethods:
     def __init__(self, model, writer):
         self.model = model
-        clip_value = 0.5
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), clip_value)
         self.writer = writer
         self.depth = model.net.attn_layers.depth
 
@@ -38,14 +36,9 @@ class PretrainingMethods:
                 self.writer.add_scalar('batch_loss/train', batch_loss, epoch * len(train_loader) + i)
                 cum_token_loss += token_loss
 
-            if grad_accum_every > 1:
-                if i % grad_accum_every <= (grad_accum_every - 1):
-                    loss.backward()
-                if i % grad_accum_every == (grad_accum_every - 1):
-                    optimizer.step()
-                    optimizer.zero_grad()
-            else:
-                loss.backward()
+            loss.backward()
+            if (i + 1) % grad_accum_every == 0:
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 0.5)
                 optimizer.step()
                 optimizer.zero_grad()
 
@@ -118,8 +111,6 @@ class FinetuningMethods:
     def __init__(self, model, writer, clf_or_reg='clf'):
         self.model = model
         self.clf_or_reg = clf_or_reg
-        clip_value = 0.5
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), clip_value)
         self.writer = writer
         self.depth = model.net.attn_layers.depth
 
@@ -130,20 +121,13 @@ class FinetuningMethods:
                               mininterval=0.5, desc=f'epoch {epoch} training'):
             loss = self.model(X)
 
-            if grad_accum_every > 1:
-                if i % grad_accum_every <= (grad_accum_every - 1):
-                    loss.backward()
-                if i % grad_accum_every == (grad_accum_every - 1):
-                    optimizer.step()
-                    optimizer.zero_grad()
-            else:
-                loss.backward()
+            loss.backward()
+            if (i + 1) % grad_accum_every == 0:
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 0.5)
                 optimizer.step()
                 optimizer.zero_grad()
 
             batch_loss = loss.item()
-            optimizer.step()
-            optimizer.zero_grad()
             self.writer.add_scalar('batch_loss/train', batch_loss, epoch * len(train_loader) + i)
             cum_loss += batch_loss
 
@@ -241,20 +225,13 @@ class BaselineMethods:
                               mininterval=0.5, desc=f'epoch {epoch} training'):
             loss = self.model(X)
 
-            if grad_accum_every > 1:
-                if i % grad_accum_every <= (grad_accum_every - 1):
-                    loss.backward()
-                if i % grad_accum_every == (grad_accum_every - 1):
-                    optimizer.step()
-                    optimizer.zero_grad()
-            else:
-                loss.backward()
+            loss.backward()
+            if (i + 1) % grad_accum_every == 0:
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 0.5)
                 optimizer.step()
                 optimizer.zero_grad()
 
             batch_loss = loss.item()
-            optimizer.step()
-            optimizer.zero_grad()
             self.writer.add_scalar('batch_loss/train', batch_loss, epoch * len(train_loader) + i)
             cum_loss += batch_loss
 
