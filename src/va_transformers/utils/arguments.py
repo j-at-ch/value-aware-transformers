@@ -1,4 +1,3 @@
-import os
 import argparse
 
 
@@ -14,21 +13,12 @@ def none_or_str(value):
 
 class Arguments:
     def __init__(self, mode):
-        self.parser = argparse.ArgumentParser(description='va-transformers')
+        self.parser = argparse.ArgumentParser(description='value-aware-transformers')
         self.mode = mode
         self.arguments = None
 
     def initialise(self):
-
-        # data roots
-        self.parser.add_argument('--data_root', type=str)
-        self.parser.set_defaults(data_root="/home/james/Documents/Charters/labs_dataset6/data")
-        self.parser.add_argument('--model_root', type=str)
-        self.parser.set_defaults(model_root="/home/james/Documents/Charters/labs_dataset6/models")
-        self.parser.add_argument('--save_root', type=str)
-        self.parser.set_defaults(save_root="/home/james/Documents/Charters/labs_dataset6/models")
-        self.parser.add_argument('--logs_root', type=str)
-        self.parser.set_defaults(logs_root="/home/james/Documents/Charters/labs_dataset6/logs")
+        self.parser.add_argument('--config', type=str, required=True)
 
         # transformer specifications
 
@@ -45,11 +35,11 @@ class Arguments:
 
         # general arguments
 
-        self.parser.add_argument('--device', type=str, default='cuda:0')
+        self.parser.add_argument('--device', type=str)
         self.parser.add_argument('--toy_run', type=int, default=0)
         self.parser.add_argument('--WARNING_TESTING', type=int, default=0, choices=[0, 1])
         self.parser.add_argument('--model_name', type=str, default=f'{self.mode}_test')
-        self.parser.add_argument('--num_epochs', type=int, default=50)
+        self.parser.add_argument('--num_epochs', type=int, default=2)
         self.parser.add_argument('--early_stopping_threshold', type=int, default=7)
         self.parser.add_argument('--batch_size_tr', type=int, default=100)
         self.parser.add_argument('--batch_size_val', type=int, default=100)

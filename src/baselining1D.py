@@ -2,18 +2,17 @@ import os
 import numpy as np
 from pprint import pprint
 
-import torch
 from torch import nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from utils import model_methods
-from utils.data_utils import *
-from utils.arguments import Arguments
-from utils.mappings import Mappings
-from utils.samplers import V1dDataset
-from va_transformers.finetuning_wrapper import Classifier, SimpleClassifier
+from src.va_transformers.utils import model_methods
+from src.va_transformers.utils.data_utils import *
+from src.va_transformers.utils.arguments import Arguments
+from src.va_transformers.utils.mappings import Mappings
+from src.va_transformers.utils.samplers import V1dDataset
+from src.va_transformers import Classifier, SimpleClassifier
 
 
 def baseline_for_1D(args):

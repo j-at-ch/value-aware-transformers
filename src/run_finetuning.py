@@ -1,17 +1,16 @@
 import os
-import sys
 
 import numpy as np
-import pandas as pd
 from pprint import pprint
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from utils import model_methods
-from utils.data_utils import *
-from utils.arguments import Arguments
-from utils.mappings import Mappings, Labellers
-from utils.samplers import SeqSamplerDataset
+from va_transformers.utils import model_methods
+from va_transformers.utils.data_utils import *
+from va_transformers.utils.arguments import Arguments
+from va_transformers.utils.utils import read_yaml
+from va_transformers.utils.mappings import Mappings, Labellers
+from va_transformers.utils.samplers import SeqSamplerDataset
 from va_transformers.va_transformers import TransformerWrapper, Decoder
 from va_transformers.finetuning_wrapper import FinetuningWrapper
 
@@ -23,7 +22,7 @@ def main(args):
 
     # paths
 
-    d_items_path = os.path.join(args.data_root, "D_LABITEMS.csv")
+    d_items_path = os.path.join(args.data_root, "d_labitems.csv")
     train_path = os.path.join(args.data_root, "train_data.pkl")
     val_path = os.path.join(args.data_root, "val_data.pkl")
     mapping_path = os.path.join(args.data_root, "mappings.pkl")
@@ -140,7 +139,7 @@ def main(args):
         print(f"Train set positive class propensity is {p}")
 
         if bool(args.weighted_loss):
-            weights = torch.tensor([p, 1 - p]).to(device)
+            weights = torch.tensor([p, 1 - p], dtype=torch.float32).to(device)
 
     # fetch model params
 
@@ -177,6 +176,7 @@ def main(args):
                                   state_dict=state_dict,
                                   clf_or_reg=args.clf_or_reg,
                                   num_classes=args.num_classes,
+                                  hidden_dim=args.clf_hidden_dim,
                                   clf_style=args.clf_style,
                                   clf_dropout=args.clf_dropout,
                                   clf_depth=args.clf_depth,
@@ -344,6 +344,11 @@ def main(args):
 
 if __name__ == "__main__":
     arguments = Arguments(mode='finetuning').parse()
+    config = read_yaml(arguments.config)
+    arguments.data_root = config.get('data_path')
+    arguments.model_root = config.get('model_path')
+    arguments.save_root = config.get('save_path')
+    arguments.logs_root = config.get('logs_path')
 
     # check output roots exist; if not, create...
 

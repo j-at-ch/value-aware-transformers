@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pickle as pickle
 import tqdm
+import shutil
 
 from pprint import pprint
 from sklearn.model_selection import train_test_split
@@ -65,6 +66,7 @@ def preprocess_labs_for_1p5D(args):
 
     # paths
     d_labitems_path = os.path.join(args.mimic_root, "D_LABITEMS.csv")
+
 
     if bool(args.labs_preliminaries_done):
         scaled_labevents_path = os.path.join(args.data_root, "labevents_scaled.csv")
@@ -168,20 +170,11 @@ def preprocess_labs_for_1p5D(args):
         adm.to_csv(targets_path)
         print("written!\n")
 
-    else:
-        admissions_path = os.path.join(args.data_root, "augmented_admissions.csv")
-        adm = pd.read_csv(admissions_path,
-                          index_col='HADM_ID',
-                          parse_dates=['ADMITTIME', 'DISCHTIME', 'DEATHTIME', 'EDREGTIME', 'EDOUTTIME'])
-
-    train_indices = adm[adm.PARTITION == 'train'].index.to_numpy()
-    val_indices = adm[adm.PARTITION == 'val'].index.to_numpy()
-    test_indices = adm[adm.PARTITION == 'test'].index.to_numpy()
-
-    # ready the tokens:
-
+    # copy the token dictionary
+    shutil.copy(d_labitems_path, os.path.join(args.save_root, 'd_labitems.csv'))
     d_labitems = pd.read_csv(d_labitems_path)
 
+    # generate the tokens:
     special_tokens = {'[PAD]': 0}
     token_shift = len(special_tokens)
     itemid2token = dict(zip(d_labitems['ITEMID'], range(token_shift, token_shift + len(d_labitems))))

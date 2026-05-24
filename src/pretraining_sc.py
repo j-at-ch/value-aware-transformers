@@ -1,20 +1,17 @@
 import os
-import sys
 
-import tqdm
 import numpy as np
-import pandas as pd
 from pprint import pprint
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from utils import model_methods
-from utils.data_utils import *
-from utils.arguments import Arguments
-from utils.mappings import Mappings, Labellers
-from utils.samplers import SeqSamplerDataset, cycler
-from va_transformers.va_transformers import Decoder, TransformerWrapper
-from va_transformers.autoregressive_wrapper import AutoregressiveWrapper
+from src.va_transformers.utils import model_methods
+from src.va_transformers.utils.data_utils import *
+from src.va_transformers.utils.arguments import Arguments
+from src.va_transformers.utils.mappings import Mappings
+from src.va_transformers.utils.samplers import SeqSamplerDataset
+from src.va_transformers import Decoder, TransformerWrapper
+from src.va_transformers import AutoregressiveWrapper
 
 
 def main(args):
