@@ -66,10 +66,17 @@ class Labellers:
             return '[SOS]'
         elif token == self.mappings.eos_token:
             return '[EOS]'
-        else:
-            itemid = self.mappings.token2itemid[token]
-            x = self.d_items_df.loc[itemid, 'LABEL']
-        return x
+        itemid = str(self.mappings.token2itemid[token])
+        return self.d_items_df.loc[itemid, 'LABEL']
+
+    def token2metadata(self, token):
+        if token in (self.mappings.pad_token, self.mappings.sos_token, self.mappings.eos_token):
+            name = self.mappings.token2itemid.get(token, str(token))
+            return (str(name), '', '', 0)
+        itemid = str(self.mappings.token2itemid[token])
+        row = self.d_items_df.loc[itemid]
+        count = self.mappings.token2trcount.get(token, 0)
+        return (f"{row['LABEL']} ({row['FLUID']})", row['CATEGORY'], row['FLUID'], count)
 
     def tokens2label_string(self, tokens):
         return '\n\t -> '.join(list(map(self.token2label, tokens)))

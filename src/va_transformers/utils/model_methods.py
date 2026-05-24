@@ -100,9 +100,10 @@ class PretrainingMethods:
             x_part = x_part.to(device)
             z_part = self.model.net.token_emb(x_part)
             z = torch.cat((z, z_part))
-        metadata = [label for label in map(labeller.token2label, x.cpu().numpy())]
+        metadata = list(map(labeller.token2metadata, x.cpu().numpy()))
         self.writer.add_embedding(z,
                                   metadata=metadata,
+                                  metadata_header=['label', 'category', 'fluid', 'train_count'],
                                   global_step=step,
                                   tag='token_embeddings')
 
@@ -205,9 +206,10 @@ class FinetuningMethods:
             x_part = x_part.to(device)
             z_part = self.model.net.token_emb(x_part)
             z = torch.cat((z, z_part))
-        metadata = [label for label in map(labeller.token2label, x.cpu().numpy())]
+        metadata = list(map(labeller.token2metadata, x.cpu().numpy()))
         self.writer.add_embedding(z,
                                   metadata=metadata,
+                                  metadata_header=['label', 'category', 'fluid', 'train_count'],
                                   global_step=step,
                                   tag='token_embeddings')
 
